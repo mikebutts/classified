@@ -1,15 +1,31 @@
 const createError = require("http-errors");
 const express = require("express");
+const bodyParser = require("body-parser");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-
+const mongoose = require("mongoose");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
-const reviewssRouter = require("./routes/reviews");
+const reviewsRouter = require("./routes/reviews");
+const passport = require("passport");
+const session = require("express-session");
+const User = require("./models/user");
 
 const app = express();
+
+//setup database connection
+mongoose.connect("mongodb://localhost:27017/rgs", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+mongoose.set("useCreateIndex", true);
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function() {
+  console.log(" DB connected");
+});
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -17,10 +33,24 @@ app.set("view engine", "pug");
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// configure Passport and Sessions
+app.use(
+  session({
+    secret: "i love rochester",
+    resave: false,
+    saveUninitialized: true
+  })
+);
+passport.use(User.createStrategy());
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Mount Routes
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
