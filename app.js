@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const createError = require("http-errors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -12,6 +14,7 @@ const reviewsRouter = require("./routes/reviews");
 const passport = require("passport");
 const session = require("express-session");
 const User = require("./models/user");
+const methodOverride = require("method-override");
 
 const app = express();
 
@@ -29,13 +32,14 @@ db.once("open", function() {
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
+app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride("_method"));
 
 // configure Passport and Sessions
 app.use(
@@ -45,6 +49,11 @@ app.use(
     saveUninitialized: true
   })
 );
+
+// Configure passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 passport.use(User.createStrategy());
 
 passport.serializeUser(User.serializeUser());

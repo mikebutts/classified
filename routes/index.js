@@ -1,26 +1,32 @@
 var express = require("express");
 var router = express.Router();
-const { postRegister } = require("../controllers/index");
+const { postRegister, postLogin, getLogout } = require("../controllers");
+const { asyncErrorHandler } = require("../middleware");
 
 /* GET home page. */
 router.get("/", (req, res, next) => {
   res.render("index", { title: "Rochester Garage Sales - Home" });
 });
+
+// ----------- REGISTER METHODS -------------
 /* GET register page. */
 router.get("/register", (req, res, next) => {
   res.send("GET /register");
 });
 /* POST  register page. */
-router.post("/register", postRegister);
+router.post("/register", asyncErrorHandler(postRegister));
 
+// ---------- LOGGING IN AND OUT METHODS -------------
 /* GET login  page. */
 router.get("/login", (req, res, next) => {
   res.send("GET /login");
 });
+
 /* POST  login  page. */
-router.post("/login", (req, res, next) => {
-  res.render("POST /login");
-});
+router.post("/login", postLogin);
+
+// GET log out
+router.get("/logout", getLogout);
 
 /* GET profile page. */
 router.get("/profile", (req, res, next) => {
