@@ -1,9 +1,9 @@
 const Post = require("../models/post");
 const cloudinary = require("cloudinary");
 cloudinary.config({
-  cloud_name: "dekzntogc",
-  api_key: "247518451191742",
-  api_secret: process.env.CLOUDINARY_SECRET
+  cloud_name: "dpmmpzfrw",
+  api_key: "353574615323935",
+  api_secret: process.env.CLOUDINARY_SECRET,
 });
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
       let image = await cloudinary.v2.uploader.upload(file.path);
       req.body.post.images.push({
         url: image.secure_url,
-        public_id: image.public_id
+        public_id: image.public_id,
       });
     }
     let post = await Post.create(req.body.post);
@@ -73,7 +73,7 @@ module.exports = {
         //add images to post.images array
         post.images.push({
           url: image.secure_url,
-          public_id: image.public_id
+          public_id: image.public_id,
         });
       }
     }
@@ -98,5 +98,5 @@ module.exports = {
     }
     await post.remove();
     res.redirect("/posts");
-  }
+  },
 };

@@ -19,14 +19,17 @@ const methodOverride = require("method-override");
 const app = express();
 
 //setup database connection
-mongoose.connect("mongodb://localhost:27017/rgs", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(
+  "mongodb+srv://ilovergs:baIPS8LQL3eZVqld@cluster0-j2gj5.mongodb.net/RGS",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 mongoose.set("useCreateIndex", true);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
+db.once("open", function () {
   console.log(" DB connected");
 });
 
@@ -46,7 +49,7 @@ app.use(
   session({
     secret: "i love rochester",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
   })
 );
 
@@ -66,12 +69,12 @@ app.use("/posts", postsRouter);
 app.use("/posts/:id/reviews", reviewsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
