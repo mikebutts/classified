@@ -1,4 +1,7 @@
 const Post = require("../models/post");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const geocodingClient = mbxGeocoding({ accessToken: process.env.MAPBOX_TOKEN });
+
 const cloudinary = require("cloudinary");
 cloudinary.config({
   cloud_name: "dpmmpzfrw",
@@ -29,6 +32,14 @@ module.exports = {
         public_id: image.public_id,
       });
     }
+    let response = await geocodingClient
+      .forwardGeocode({
+        query: req.body.post.location,
+        limit: 1,
+      })
+      .send();
+
+    req.body.post.coordinates = response.body.features[0].geometry.coordinates;
     let post = await Post.create(req.body.post);
     res.redirect(`/posts/${post.id}`);
   },
@@ -77,7 +88,20 @@ module.exports = {
         });
       }
     }
+
+    //check if location was updated
+    if (req.body.post.location != post.location) {
+      let response = await geocodingClient
+        .forwardGeocode({
+          query: req.body.post.location,
+          limit: 1,
+        })
+        .send();
+
+      post.coordinates = response.body.features[0].geometry.coordinates;
+    }
     // update the post with any new properties
+
     post.title = req.body.post.title;
     post.description = req.body.post.description;
     post.price = req.body.post.price;

@@ -9,18 +9,17 @@ const PostSchema = new Schema({
   location: String,
   category: String,
   timestamp: { type: Date, default: Date.now },
-  lat: Number,
-  lng: Number,
+  coordinates: Array,
   author: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
   },
   reviews: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Review"
-    }
-  ]
+      ref: "Review",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Post", PostSchema);
