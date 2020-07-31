@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const createError = require("http-errors");
 const express = require("express");
+const engine = require("ejs-mate");
 const bodyParser = require("body-parser");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -34,6 +35,7 @@ db.once("open", function () {
 });
 
 // view engine setup
+app.engine("ejs", engine);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
